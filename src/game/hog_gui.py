@@ -70,7 +70,7 @@ class Frame(BetterWidget, tk.Frame):
 
 def name(who):
     """Return the name of a player."""
-    return "Player {0}".format(who)
+    return "Joueur {0}".format(who)
 
 
 class HogGUIException(BaseException):
@@ -138,7 +138,7 @@ class HogGUI(Frame):
         self.roll_entry = Entry(self.roll_frame,justify=CENTER).pack()
         self.roll_entry.bind('<Return>',lambda event: self.roll_button.invoke())
         self.roll_verified = IntVar()
-        self.roll_button = Button(self.roll_frame,text='Roll!', command=self.roll).pack()
+        self.roll_button = Button(self.roll_frame,text='Lancer!', command=self.roll).pack()
         
     def init_dice(self):
         """Creates child widgets associated with dice. Each dice is stored in a
@@ -168,7 +168,7 @@ class HogGUI(Frame):
                                      command=self.restart).pack()
 
     
-    def make_dice():
+    def make_dice(self):
         """Creates a dice function that hooks to the GUI and wraps
         dice.make_fair_dice.
         sides -- number of sides for the die
@@ -199,6 +199,7 @@ class HogGUI(Frame):
             self.roll_verified.set(int(result))
 
 
+    
 
 
     def switch(self, who=None):
@@ -212,44 +213,79 @@ class HogGUI(Frame):
         self.s_labels[self.who].config(bg=select_bg)
         
         
+    def restart(self):
+        """Kills the current game and begins another game."""
+        self.roll_verified.set(HogGUI.KILL)
+        self.status_label.text = ''
+        self.clear_dice()
+        self.play()
+        
+    def destroy(self):
+        """Overrides the destroy method to end the current game."""
+        self.roll_verified.set(HogGUI.KILL)
+        super().destroy()
         
         
         
         
         
+
+    def play(self):
+        """Simulates a game of Hog by calling hog.play with the GUI strategies.
+        If the player destroys the window prematurely (i.e. in the
+        middle of a game), a HogGUIException is raised to exit out
+        of play's loop. Otherwise, the widget will be destroyed,
+        but the strategy will continue waiting.
+        """
+        self.turn = 1 - self.turn
+        self.switch(0)
+        self.s_labels[0].text = '0'
+        self.s_labels[1].text = '0'
+        self.status_label.text = ''
+        try:
+            score, score_adverse = hog.jouer(self.strategy, self.strategy)
+        except HogGUIException:
+            pass
+        else:
+            self.s_labels[0].text = score
+            self.s_labels[1].text = score_adverse
+            winner = 0 if score > score_adverse else 1
+            self.status_label.text = 'Game over! {} wins!'.format(name(winner))        
         
+
+
+
+
+    def strategy(self,score,score_adverse):
         
+        s0 = score if self.who == 0 else score_adverse
+        s1 = score_adverse if self.who == 0 else score
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        self.s_labels[0].text = s0
+        self.s_labels[1].text = s1
+        
+        self.roll_label.text = name(self.who) +' va jouer:'
+        
+        status = self.status_label.text
+        
+        if self.computer and self.who == self.turn:
+            self.update()
+            self.after(DELAY)
+            result = hog.strategie_c(score, score_adverse)
+        else:
+            self.roll_entry.focus_set()
+            self.wait_variable(self.roll_verified)
+            result = self.roll_verified.get()
+            self.roll_entry.text = ''
+        if result == HogGUI.KILL:
+            raise HogGUIException
+        
+        self.clear_dice()
+        self.dice_count = 0
+        self.status_label.text = '{} chose to roll {}.'.format(name(self.who),
+                                                               result)
+        self.switch()
+        return result
 
 
 
@@ -257,19 +293,19 @@ def run_GUI(computer=False):
     """Start the GUI.
     computer -- True if playing against computer
     """
-    root = Tk()
-    root.title('The Game of Hog')
+    root = Tk() #Toplevel()
+    root.title('Dice Battles')
     root.minsize(520, 400)
     root.geometry("520x400")
 
     # Tkinter only works with GIFs
     HogGUI.IMAGES = {
-        1: PhotoImage(file='images/die1.gif'),
-        2: PhotoImage(file='images/die2.gif'),
-        3: PhotoImage(file='images/die3.gif'),
-        4: PhotoImage(file='images/die4.gif'),
-        5: PhotoImage(file='images/die5.gif'),
-        6: PhotoImage(file='images/die6.gif'),
+        1: PhotoImage(file='./images/die1.gif'),
+        2: PhotoImage(file='./images/die2.gif'),
+        3: PhotoImage(file='./images/die3.gif'),
+        4: PhotoImage(file='./images/die4.gif'),
+        5: PhotoImage(file='./images/die5.gif'),
+        6: PhotoImage(file='./images/die6.gif'),
     }
 
     app = HogGUI(root, computer)

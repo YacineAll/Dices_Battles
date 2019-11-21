@@ -7,7 +7,7 @@ Created on Wed Nov 20 17:42:53 2019
 """
 
 import numpy as np
-from dice import  dice,make_test_dice
+from dice import *
 
 SCORE_MAX = 100
 D_MAX = 10
@@ -117,8 +117,14 @@ def max_esperance():
         
         
         
-        
-        
+def strategie_c(score, score_adverse):
+    
+    def strategie(score,score_adverse):
+        return dice()        
+    
+    return strategie
+
+
         
         
         
