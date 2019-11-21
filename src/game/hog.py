@@ -68,6 +68,7 @@ def jouer(strategie0, strategie1, but = SCORE_MAX):
             return score, score_adverse
         
         p1 = strategie1(score_adverse, score)
+        
         current_score1 = tour(p1, score)
         
         score_adverse += current_score1
@@ -104,35 +105,10 @@ def max_esperance():
     
     return strategie
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-def strategie_c(score, score_adverse):
-    
-    def strategie(score,score_adverse):
-        return dice()        
-    
-    return strategie
 
 
-        
-        
-        
-        
-        
-        
-        
-        
+
+
         
         
         

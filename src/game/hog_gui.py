@@ -23,7 +23,7 @@ class BetterWidget(object):
     def config(self, **kwargs):
         super().config(**kwargs)
         return self
-    
+
 class TextWidget(BetterWidget):
     """A TextWidget contains a mutable line of text."""
     def __init__(self, **kwargs):
@@ -39,15 +39,15 @@ class TextWidget(BetterWidget):
     @text.setter
     def text(self, value):
         return self.textvar.set(str(value))
-    
-    
+
+
 class Label(TextWidget, tk.Label):
     """A Label is a text label."""
     def __init__(self, parent, **kwargs):
         kwargs.update(label_theme)
         tk.Label.__init__(self, parent, **kwargs)
         TextWidget.__init__(self, **kwargs)
-        
+
 class Button(BetterWidget, tk.Button):
     """A Button is an interactive button."""
     def __init__(self, *args, **kwargs):
@@ -60,7 +60,7 @@ class Entry(TextWidget, tk.Entry):
         kwargs.update(entry_theme)
         tk.Entry.__init__(self, parent, **kwargs)
         TextWidget.__init__(self, **kwargs)
-        
+
 class Frame(BetterWidget, tk.Frame):
     """A Frame contains other widgets."""
     def __init__(self, *args, **kwargs):
@@ -85,8 +85,8 @@ class HogGUIException(BaseException):
 
 class HogGUI(Frame):
     """Tkinter GUI for Hog."""
-    KILL = -9 
-    
+    KILL = -9
+
     def __init__(self, parent, computer=False):
         """Replace hog module's dice with hooks to GUI and start a game.
         parent   -- parent widget (should be root)
@@ -106,7 +106,7 @@ class HogGUI(Frame):
         six_sided = self.make_dice()
         self.computer, self.turn = computer, 0
         self.play()
-        
+
     def init_scores(self):
         """Creates child widgets associated with scoring.
         Each player has a score Label that is updated each turn. Scores can be
@@ -139,7 +139,7 @@ class HogGUI(Frame):
         self.roll_entry.bind('<Return>',lambda event: self.roll_button.invoke())
         self.roll_verified = IntVar()
         self.roll_button = Button(self.roll_frame,text='Lancer!', command=self.roll).pack()
-        
+
     def init_dice(self):
         """Creates child widgets associated with dice. Each dice is stored in a
         Label. Dice Labels will be packed or unpacked depending on how many dice
@@ -155,19 +155,19 @@ class HogGUI(Frame):
                     pack(side=LEFT)
             for i in range(10)
         }
-        
+
     def init_status(self):
         """Creates child widgets associated with the game status. For example,
         Hog Wild is displayed here."""
         self.status_label = Label(self).pack()
-        
-    
+
+
     def init_restart(self):
         """Creates child widgets associated with restarting the game."""
         self.restart_button = Button(self, text='Restart',
                                      command=self.restart).pack()
 
-    
+
     def make_dice(self):
         """Creates a dice function that hooks to the GUI and wraps
         dice.make_fair_dice.
@@ -187,8 +187,8 @@ class HogGUI(Frame):
         """Unpacks (hides) all dice Labels."""
         for i in range(10):
             self.dice[i].pack_forget()
-    
-    
+
+
     def roll(self):
         """Verify and set the number of rolls based on user input. As
         per game rules, a valid number of rolls must be an integer
@@ -199,7 +199,7 @@ class HogGUI(Frame):
             self.roll_verified.set(int(result))
 
 
-    
+
 
 
     def switch(self, who=None):
@@ -211,24 +211,24 @@ class HogGUI(Frame):
         self.p_frames[self.who].config(bg=select_bg)
         self.p_labels[self.who].config(bg=select_bg)
         self.s_labels[self.who].config(bg=select_bg)
-        
-        
+
+
     def restart(self):
         """Kills the current game and begins another game."""
         self.roll_verified.set(HogGUI.KILL)
         self.status_label.text = ''
         self.clear_dice()
         self.play()
-        
+
     def destroy(self):
         """Overrides the destroy method to end the current game."""
         self.roll_verified.set(HogGUI.KILL)
         super().destroy()
-        
-        
-        
-        
-        
+
+
+
+
+
 
     def play(self):
         """Simulates a game of Hog by calling hog.play with the GUI strategies.
@@ -250,28 +250,31 @@ class HogGUI(Frame):
             self.s_labels[0].text = score
             self.s_labels[1].text = score_adverse
             winner = 0 if score > score_adverse else 1
-            self.status_label.text = 'Game over! {} wins!'.format(name(winner))        
-        
+            self.status_label.text = 'Game over! {} wins!'.format(name(winner))
+
 
 
 
 
     def strategy(self,score,score_adverse):
-        
+
         s0 = score if self.who == 0 else score_adverse
         s1 = score_adverse if self.who == 0 else score
 
         self.s_labels[0].text = s0
         self.s_labels[1].text = s1
-        
+
         self.roll_label.text = name(self.who) +' va jouer:'
-        
+
         status = self.status_label.text
-        
+
         if self.computer and self.who == self.turn:
             self.update()
             self.after(DELAY)
-            result = hog.strategie_c(score, score_adverse)
+##################################################################################################################################################################################################################################
+            result = hog.max_esperance()(score,score_adverse)
+# Modifier la façon de choisir les strategie
+##################################################################################################################################################################################################################################
         else:
             self.roll_entry.focus_set()
             self.wait_variable(self.roll_verified)
@@ -279,11 +282,10 @@ class HogGUI(Frame):
             self.roll_entry.text = ''
         if result == HogGUI.KILL:
             raise HogGUIException
-        
+
         self.clear_dice()
         self.dice_count = 0
-        self.status_label.text = '{} chose to roll {}.'.format(name(self.who),
-                                                               result)
+        self.status_label.text = '{} a choisi de lancer {}.'.format(name(self.who),result)
         self.switch()
         return result
 
@@ -310,8 +312,8 @@ def run_GUI(computer=False):
 
     app = HogGUI(root, computer)
     root.mainloop()
-    
-    
+
+
 select_bg = '#a6d785'
 bg='#ffffff'
 fg='#000000'
