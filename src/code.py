@@ -7,45 +7,53 @@ Created on Fri Nov 15 14:26:06 2019
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
+
+
+
+
+D = 10
+K = 6*D
+N = 100
 
 
 
 def Q(d,k):
-    D=d
-    K = k
-    a = np.zeros((D+1,K+1))
+    a = np.zeros((d+1,k+1))
     
-    for _d in range(1,D+1):
-        for _k in range(2,K+1):
+    for _d in range(d+1):
+        for _k in range(k+1):
+            if (_k > 6*_d) or (_k < 2*_d):
+                a[_d][_k] = 0.0
+                continue
             if(_d == 1): 
                 a[_d][_k] = 1/5
-            else :
-                a[_d][_k] = (sum([ a[_d-1][_k-i] for  i in range(2,7) if (_k-i>=0) and (_d-1>=0)  ]) /5)
+                continue
+            s = 0
+            for i in range(2,7):
+                if(_k>i):
+                    s += a[_d-1][_k-i]   
+                
+            a[_d][_k] = (1/5) * s 
                 
     return a[d][k]
             
-def P(D,K):
-    a = np.zeros((D+1,K+1))
+def P(d,k):
     
-    for d in range(1,D+1):
-        for k in range(1,K+1):
-            if k == 1 : 
-                a[d][k] = 1 - np.power(5/6,d)
-            if ((k >= 2) and (k <= 2*d-1) ) or (k > 6*d) : 
-                a[d][k] = 0        
-            
-            if (k >= 2*d) and ( k <= 6*d ):
-                if (d == 1):
-                    a[d][k]=1/6
-                else:
-                    a[d][k] = np.power(5/6,d) * Q(d,k)
-    return a
+    if k == 1:
+        return 1.0 - (5.0/6.0)**d
+    if (k > 6*d) or (k > 1 and k < 2*d):
+        return 0.0
+    return Q(d,k)*(5.0/6.0)**d
+    
 
-D = 10
-K = 6*D
+def generate_P_matrix(D):
+	P_matrix = np.zeros((D+1,6*D+1))
+	for i in range(1,D+1):
+		for j in range(6*D+1):
+			P_matrix[i][j] = P(i,j)
+	return P_matrix
 
-probabilite = P(D,K)
+
 
 
 def EP(D=10):
@@ -53,11 +61,24 @@ def EP(D=10):
 
 
 
-def EG(d,p):
-    return sum([p[d][i]*i for i in range (p.shape[0] + 1 ) ])
 
-plt.plot([i for i in range(1,D+1)],np.array([4*d*np.power(5/6,d) + (1-np.power(5/6,d)) for d in range(1,D+1) ]))
-plt.plot([i for i in range(1,D+1)],[ EG(d,probabilite) for d in range(1,D+1)])
+def G():
+    def f(j,k):
+        return (k > 0 and j>0)
+    a = np.zeros((N,N))
+    for i in range(1,N):
+        for  j in range(1,N):
+            a[i][j] = max([ probabilite[d][1]*(1- a[j][i-1]) + 
+              sum([ probabilite[d][k]*(1-a[j][i-k]*f(j,i-k) )  for k in range (2*d,6*d + 1) ])  for d in range(1,D+1)])
+    
+    return a
+
+
+probabilite = generate_P_matrix(D)
+probabilites_matrix = G()
+
+
+
 
 
 
