@@ -87,6 +87,8 @@ class HogGUI(Frame):
     """Tkinter GUI for Hog."""
     KILL = -9
 
+    STRATEGIES=[hog.strategie_aveugle(),hog.toujour_lancer(3)] 
+    
     def __init__(self, parent, computer=False):
         """Replace hog module's dice with hooks to GUI and start a game.
         parent   -- parent widget (should be root)
@@ -250,7 +252,7 @@ class HogGUI(Frame):
             self.s_labels[0].text = score
             self.s_labels[1].text = score_adverse
             winner = 0 if score > score_adverse else 1
-            self.status_label.text = 'Game over! {} wins!'.format(name(winner))
+            self.status_label.text = 'Game over! {} GAGNE ^_^ !'.format(name(winner))
 
 
 
@@ -272,7 +274,7 @@ class HogGUI(Frame):
             self.update()
             self.after(DELAY)
 ##################################################################################################################################################################################################################################
-            result = hog.strategie_aveugle()(score,score_adverse)
+            result = self.STRATEGIES[0](score,score_adverse)
 # Modifier la façon de choisir les strategie
 ##################################################################################################################################################################################################################################
         else:
