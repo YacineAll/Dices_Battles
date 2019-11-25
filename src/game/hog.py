@@ -8,9 +8,15 @@ Created on Wed Nov 20 17:42:53 2019
 
 import numpy as np
 from dice import *
+from outils import *
 
 SCORE_MAX = 100
 D_MAX = 10
+
+probabiltes = generate_P_matrix(D_MAX)
+eg,opt = esperance_gain(SCORE_MAX,D_MAX,probabiltes)
+
+
 def _roulez_les_des(d):
 
     assert type(d) == int, 'nombre de dés doit étre un entier.'
@@ -94,6 +100,16 @@ def toujour_lancer(n):
 
 
 
+def strategie_aleatoire():
+    """Renvoie le nombre de dés (1 à 10) donnant le tour moyen le plus élevé.
+    EP = max ( 4*d*np.power(5/6,d) + 1 - np.power(5/6,d) for d in {1,2,3,...,D_MAX})
+    D_MAX : le nombre maximum de des que on peut lancer
+    """
+    def strategie(score, score_adverse):
+        return np.random.randint(D_MAX) + 1
+    return strategie
+
+
 def strategie_aveugle():
     """Renvoie le nombre de dés (1 à 10) donnant le tour moyen le plus élevé.
     EP = max ( 4*d*np.power(5/6,d) + 1 - np.power(5/6,d) for d in {1,2,3,...,D_MAX})
@@ -102,8 +118,19 @@ def strategie_aveugle():
     def strategie(score, score_adverse):
         D=D_MAX
         return int(1+np.argmax(np.array([4*d*np.power(5/6,d) + (1-np.power(5/6,d)) for d in range(1,D+1) ])))
-
     return strategie
+
+def strategie_optimale():
+    """Renvoie le nombre de dés (1 à 10) donnant le tour moyen le plus élevé.
+    EP = max ( 4*d*np.power(5/6,d) + 1 - np.power(5/6,d) for d in {1,2,3,...,D_MAX})
+    D_MAX : le nombre maximum de des que on peut lancer
+    """
+    def strategie(score, score_adverse):
+        return opt[score][score_adverse]
+    return strategie
+
+
+
 
 
 

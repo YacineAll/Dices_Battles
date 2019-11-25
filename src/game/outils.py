@@ -6,16 +6,7 @@ Created on Fri Nov 15 14:26:06 2019
 @author: ghiles
 """
 
-
-
 import numpy as np
-
-
-
-
-N = hog.SCORE_MAX
-D = hog.D_MAX
-K = 6*D
 
 
 
@@ -60,9 +51,7 @@ def generate_P_matrix(D):
 def EP(D=10):
     return 1+np.argmax(np.array([4*d*np.power(5/6,d) + (1-np.power(5/6,d)) for d in range(1,D+1) ]))
 
-
-
-
+"""
 def G():
     def f(j,k):
         return (k > 0 and j>0)
@@ -78,10 +67,10 @@ def G():
             a[i][j][1] = 1+np.argmax(l)
 
     return a
+"""
 
 
-
-def esperance_gain():
+def esperance_gain(N,D,probabilite):
     a = np.full((N+6*D,N+6*D),0)
 
     a[N: , :N] = 1
@@ -102,7 +91,7 @@ def esperance_gain():
 
 
 
-probabilite = generate_P_matrix(D)
+#probabilite = generate_P_matrix(D)
 #probabilites_matrix = G()
 #eg,opt = _esperanceGain()
 
