@@ -47,10 +47,6 @@ def generate_P_matrix(D):
 
 
 
-
-def EP(D=10):
-    return 1+np.argmax(np.array([4*d*np.power(5/6,d) + (1-np.power(5/6,d)) for d in range(1,D+1) ]))
-
 """
 def G():
     def f(j,k):
@@ -91,10 +87,6 @@ def esperance_gain(N,D,probabilite):
     return a,optimal
 
 
-
-#probabilite = generate_P_matrix(D)
-#probabilites_matrix = G()
-#eg,opt = _esperanceGain()
 
 
 

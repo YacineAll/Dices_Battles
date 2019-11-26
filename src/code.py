@@ -13,8 +13,8 @@ import numpy as np
 
 
 
-N = hog.SCORE_MAX
-D = hog.D_MAX
+N = 100
+D = 10
 K = 6*D
 
 
@@ -103,7 +103,10 @@ def _esperanceGain():
                     eg[i, j] =  ed[opt[i, j]]
         return eg, opt
 
-
+def esp(d1,d2):
+    a = probabilite[d1][np.arange(1,6*d1+1)].dot(np.arange(1,6*d1+1))
+    b = probabilite[d2][np.arange(1,6*d2+1)].dot(np.arange(1,6*d2+1))
+    return a,b
 probabilite = generate_P_matrix(D)
 #probabilites_matrix = G()
 eg,opt = _esperanceGain()

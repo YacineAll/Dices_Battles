@@ -10,8 +10,8 @@ import numpy as np
 from dice import *
 from outils import *
 
-SCORE_MAX = 100
-D_MAX = 10
+SCORE_MAX = 200
+D_MAX = 20
 
 
 class hog :
@@ -43,8 +43,8 @@ class hog :
 
         assert type(d) == int, 'd doit être un entier.'
         assert d > 0, 'Impossible de lancer un nombre négatif de dés ou zero .'
-        assert d <= 10, 'ON ne peut pas lancer plus de 10 dés.'
-        assert score_adverse < 100, 'Le jeu devrait être terminé.'
+        assert d <= D_MAX, 'ON ne peut pas lancer plus de 10 dés.'
+        assert score_adverse < SCORE_MAX, 'Le jeu devrait être terminé.'
         return self._roulez_les_des(d)
 
 
@@ -64,20 +64,23 @@ class hog :
         strategie0: fonction de stratégie pour le joueur 0, qui joue en premier.
         strategie1: fonction de stratégie pour le joueur 1, qui joue en second.
 
+        h.jouer(h.strategie_optimale(),h.strategie_optimale())
         """
 
         score, score_adverse = 0, 0
 
         while score < but and score_adverse < but :
             p0 = strategie0(score,score_adverse)
+            p0 = int(p0)
             current_score0 = self.tour(p0, score_adverse)
 
             score += current_score0
 
-            if score >=100:
+            if score >= but:
                 return score, score_adverse
 
             p1 = strategie1(score_adverse, score)
+            p1 = int(p1)
 
             current_score1 = self.tour(p1, score)
 
