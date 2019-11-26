@@ -71,7 +71,8 @@ def G():
 
 
 def esperance_gain(N,D,probabilite):
-    a = np.full((N+6*D,N+6*D),0)
+
+    a = np.full((N+6*D,N+6*D),np.nan)
 
     a[N: , :N] = 1
     a[:N , N: ] = -1
