@@ -6,7 +6,7 @@ Created on Wed Nov 20 19:28:27 2019
 @author: 3701222
 """
 
-from hog import hog
+import hog
 import dice
 
 
@@ -61,7 +61,6 @@ class Entry(TextWidget, tk.Entry):
         tk.Entry.__init__(self, parent, **kwargs)
         TextWidget.__init__(self, **kwargs)
 
-
 class Frame(BetterWidget, tk.Frame):
     """A Frame contains other widgets."""
     def __init__(self, *args, **kwargs):
@@ -88,40 +87,27 @@ class HogGUI(Frame):
     """Tkinter GUI for Hog."""
     KILL = -9
 
-
-
+    STRATEGIES=[hog.strategie_aveugle(),hog.toujour_lancer(3)] 
+    
     def __init__(self, parent, computer=False):
         """Replace hog module's dice with hooks to GUI and start a game.
         parent   -- parent widget (should be root)
         computer -- True if playing against a computer
         """
-
-
-
         super().__init__(parent)
-
-        self.hog = hog()
-        self.STRATEGIES=[self.hog.strategie_aleatoire(),self.hog.strategie_aveugle(),self.hog.strategie_optimale()]
-
         self.pack(fill=BOTH)
         self.parent = parent
         self.who = 0
 
         self.init_scores()
-
-        self.strategy_entry = Entry(self,justify=CENTER).pack()
-
         self.init_rolls()
         self.init_dice()
         self.init_status()
-
         self.init_restart()
 
         six_sided = self.make_dice()
         self.computer, self.turn = computer, 0
         self.play()
-
-
 
     def init_scores(self):
         """Creates child widgets associated with scoring.
@@ -151,13 +137,8 @@ class HogGUI(Frame):
         self.roll_frame = Frame(self).pack()
 
         self.roll_label = Label(self.roll_frame).pack()
-
         self.roll_entry = Entry(self.roll_frame,justify=CENTER).pack()
         self.roll_entry.bind('<Return>',lambda event: self.roll_button.invoke())
-
-
-
-
         self.roll_verified = IntVar()
         self.roll_button = Button(self.roll_frame,text='Lancer!', command=self.roll).pack()
 
@@ -185,9 +166,9 @@ class HogGUI(Frame):
 
     def init_restart(self):
         """Creates child widgets associated with restarting the game."""
-
         self.restart_button = Button(self, text='Restart',
                                      command=self.restart).pack()
+
 
     def make_dice(self):
         """Creates a dice function that hooks to the GUI and wraps
@@ -218,6 +199,10 @@ class HogGUI(Frame):
         result = self.roll_entry.text
         if result.isnumeric() and 10 >= int(result) >= 0:
             self.roll_verified.set(int(result))
+
+
+
+
 
     def switch(self, who=None):
         """Switches players. self.who is either 0 or 1."""
@@ -260,7 +245,7 @@ class HogGUI(Frame):
         self.s_labels[1].text = '0'
         self.status_label.text = ''
         try:
-            score, score_adverse = self.hog.jouer(self.strategy, self.strategy)
+            score, score_adverse = hog.jouer(self.strategy, self.strategy)
         except HogGUIException:
             pass
         else:
@@ -274,7 +259,6 @@ class HogGUI(Frame):
 
 
     def strategy(self,score,score_adverse):
-
 
         s0 = score if self.who == 0 else score_adverse
         s1 = score_adverse if self.who == 0 else score
@@ -290,9 +274,7 @@ class HogGUI(Frame):
             self.update()
             self.after(DELAY)
 ##################################################################################################################################################################################################################################
-            print(score,score_adverse)
-            result = self.STRATEGIES[int(self.strategy_entry.text)](score,score_adverse)
-            result  = int(result)
+            result = self.STRATEGIES[0](score,score_adverse)
 # Modifier la façon de choisir les strategie
 ##################################################################################################################################################################################################################################
         else:
@@ -317,7 +299,7 @@ def run_GUI(computer=False):
     """
     root = Tk() #Toplevel()
     root.title('Dice Battles')
-    root.minsize(600, 600)
+    root.minsize(520, 400)
     root.geometry("520x400")
 
     # Tkinter only works with GIFs
@@ -367,4 +349,15 @@ entry_theme = {
 DELAY=2000
 
 def run(*args):
+    parser = argparse.ArgumentParser(description='Hog GUI')
+    parser.add_argument('-f', '--final',
+                        help='play against the final strategy in hog.py. '
+                             'Computer alternates playing as player 0 and 1.',
+                        action='store_true')
+    parser.add_argument('-d', '--delay',
+                        help='time delay for computer, in seconds', type=int,
+                        default=2)
+    args = parser.parse_args()
+    global DELAY
+    DELAY = args.delay * 1000
     run_GUI(computer=args.final)

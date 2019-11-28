@@ -81,41 +81,44 @@ def G():
 
 
 
-def _esperanceGain():
-        """
-        """
-        n = N
-        d = D
-        eg = np.full((n + 6 * d, n + 6 * d), np.nan)
-        #eg = np.zeros((n + 6 * d, n + 6 * d))
-        opt = np.zeros((n, n), dtype = int)
+def esperance_gain():
+    a = np.full((N+6*D,N+6*D),0)
 
-        #remplissage des cas de base de l'esperance
-        eg[n: , :n] = 1
-        eg[:n, n: ] = -1
+    a[N: , :N] = 1
+    a[:N , N: ] = -1
 
-        for x in range(n - 1, -1, -1):
-            for y in range(x, -1, -1):
-                for i, j in {(x, y), (y, x)}:
-                    #tableau des esperances pour chaque quantité de dés possible :
-                    ed = - probabilite[ :, 1: ].dot(eg[j, (i + 1):(i + 6 * d + 1)])
-                    opt[i, j] = ed[1: ].argmax() + 1
-                    eg[i, j] =  ed[opt[i, j]]
-        return eg, opt
+    optimal = np.zeros((N, N), dtype = int)
 
-def esp(d1,d2):
-    a = probabilite[d1][np.arange(1,6*d1+1)].dot(np.arange(1,6*d1+1))
-    b = probabilite[d2][np.arange(1,6*d2+1)].dot(np.arange(1,6*d2+1))
-    return a,b
+    for x in range(N - 1, -1, -1):
+        for y in range(x, -1, -1):
+            for i,j in {(x,y),(y,x)}:
+                tmp = - probabilite[ :, 1: ].dot(a[j, (i + 1):(i + 6 * D + 1)])
 
-def matrice_des_gain(D=3):
-    g = np.zeros((3*D+1,3*D+1))
-    for i
-    return g
+                optimal[i, j] = tmp[1: ].argmax() + 1
+
+                a[i, j] =  tmp[optimal[i, j]]
+
+    return a,optimal
+
+
+
+def matrice_gain(D=3):
+    a = np.zeros((6*D+1,6*D+1))
+    
+    return a 
+
+def matrice_gain(D=3):
+    def f(i,j):
+        if(i > j) : return 1
+        if(j > i) : return -1
+        if(i == j) : return 0
+    
+    
+    return [ [ f(j,i)  for  i  in range(6*D+1) ] for  j  in range(6*D+1) ]
 
 probabilite = generate_P_matrix(D)
 #probabilites_matrix = G()
-eg,opt = _esperanceGain()
+#eg,opt = _esperanceGain()
 
 
 
