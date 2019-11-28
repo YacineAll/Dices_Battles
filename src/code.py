@@ -107,6 +107,12 @@ def esp(d1,d2):
     a = probabilite[d1][np.arange(1,6*d1+1)].dot(np.arange(1,6*d1+1))
     b = probabilite[d2][np.arange(1,6*d2+1)].dot(np.arange(1,6*d2+1))
     return a,b
+
+def matrice_des_gain(D=3):
+    g = np.zeros((3*D+1,3*D+1))
+    for i
+    return g
+
 probabilite = generate_P_matrix(D)
 #probabilites_matrix = G()
 eg,opt = _esperanceGain()
