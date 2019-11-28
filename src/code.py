@@ -13,8 +13,8 @@ import numpy as np
 
 
 
-N = hog.SCORE_MAX
-D = hog.D_MAX
+N = 100
+D = 10
 K = 6*D
 
 
@@ -101,6 +101,20 @@ def esperance_gain():
     return a,optimal
 
 
+
+def matrice_gain(D=3):
+    a = np.zeros((6*D+1,6*D+1))
+    
+    return a 
+
+def matrice_gain(D=3):
+    def f(i,j):
+        if(i > j) : return 1
+        if(j > i) : return -1
+        if(i == j) : return 0
+    
+    
+    return [ [ f(j,i)  for  i  in range(6*D+1) ] for  j  in range(6*D+1) ]
 
 probabilite = generate_P_matrix(D)
 #probabilites_matrix = G()
