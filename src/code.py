@@ -116,6 +116,8 @@ def matrice_gain(D=3):
     
     return [ [ f(j,i)  for  i  in range(6*D+1) ] for  j  in range(6*D+1) ]
 
+
+
 probabilite = generate_P_matrix(D)
 #probabilites_matrix = G()
 #eg,opt = _esperanceGain()

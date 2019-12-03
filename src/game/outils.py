@@ -89,6 +89,28 @@ def esperance_gain(N,D,probabilite):
 
     return a,optimal
 
+def eg_simul(D,probabilite):
+    def f(d1,d2):
+        s_1 = s_2 = 0
+        n = max(d1,d2)*6
+
+        for i in range(1,6*d1+1):
+            for j in range(1,6*d2+1):    
+
+                if(j<i):
+                    s_1 += probabilite[d1][i]
+
+                if(i<j):
+                    s_2 += probabilite[d2][j]
+        p = (s_1 - s_2)/n
+        return  np.round(p, 7)
+
+    a = np.zeros((D+1,D+1))
+    for d1 in range(1,D+1):
+        for d2 in range(1,D+1):        
+            a[d1][d2] = f(d1,d2)
+    return a[1:,1:]
+
 
 
 #probabilite = generate_P_matrix(D)
