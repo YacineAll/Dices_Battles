@@ -12,4 +12,5 @@ from random import randint
 sides = 6
 
 def dice():
+    
     return randint(1,sides)

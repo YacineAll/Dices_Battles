@@ -183,3 +183,4 @@ def lp_resolution(D,j=1):
     
     return prob.variables()
     
+
