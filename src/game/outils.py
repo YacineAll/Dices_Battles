@@ -92,59 +92,58 @@ def probability_to_win(probabilite,D,N):
     return a
 
 
-def esperance_gain(N,D,probabilite):
-    a = np.full((N+6*D,N+6*D),0)
-
-    a[N: , :N] = 1
-    a[:N , N: ] = -1
-
-    optimal = np.zeros((N, N), dtype = int)
-
+def esperance_gain(N,D,probas):
+    n = N
+    d = D
+    
+    e = np.full((N + 6 * d, N + 6 * D), np.nan)
+    
+    o = np.zeros((N, N), dtype = int)
+        
+    e[N: , :N] = 1
+    e[:N, N: ] = -1
+        
     for x in range(N - 1, -1, -1):
         for y in range(x, -1, -1):
-            for i,j in {(x,y),(y,x)}:
-                tmp = - probabilite[ :, 1: ].dot(a[j, (i + 1):(i + 6 * D + 1)])
-
-                optimal[i, j] = tmp[1: ].argmax() + 1
-
-                a[i, j] =  tmp[optimal[i, j]]
-
-    return a,optimal
+            for i, j in {(x, y), (y, x)}:
+                temp = - probas[ :, 1: ].dot(e[j, (i + 1):(i + 6 * D + 1)])
+                o[i, j] = temp[1: ].argmax() + 1
+                e[i, j] =  temp[o[i, j]]
+    return e, o
 
 
-def eg_simul(probabilite,D=3):
+
+def eg_simul(probabiltes,D):
     """
     2ndarray*int -> list(pulpVars)
     Prend en parametre la matrice des probabilités et le nombre de Dés maximum et resolue le probleme lineare et renvoie une liste de variable qui sont optimiser
     
     """
-    def f(d1,d2):
-        s_1 = s_2 = 0
-        n = max(d1,d2)*6
-
-        for i in range(1,6*d1+1):
-            for j in range(1,6*d2+1):    
-
-                if(j<i):
-                    s_1 += probabilite[d1][i]
-
+    def f(d1, d2):
+        j1=0
+        for i in range(1,len(probabiltes[d1])):
+            j2 = 0
+            for j in range(1,len(probabiltes[d2])):
+                if(i>j):
+                    j2 += probabiltes[d2][j]
+                
                 if(i<j):
-                    s_2 += probabilite[d2][j]
-        p = (s_1 - s_2)/n
-        return  np.round(p, 7)
-
+                    j2 -= probabiltes[d2][j]
+            j1 += probabiltes[d1][i]*j2
+        return np.round(j1,15)
     a = np.zeros((D+1,D+1))
-    for d1 in range(1,D+1):
-        for d2 in range(1,D+1):        
-            a[d1][d2] = f(d1,d2)
+    for d1 in range(D+1):
+        for d2 in range(D+1):
+            a[d1,d2] = f(d1,d2)
     return a[1:,1:]
 
-def lp_resolution(D,j=1):
+
+def lp_resolution(probabilite,D,j=1):
     
     if(j==1):
-        g = eg_simul(D)
+        g = eg_simul(probabilite,D)
     else:
-        g = eg_simul(D).T
+        g = eg_simul(probabilite,D).T
         
     nb_variables = D+1
 

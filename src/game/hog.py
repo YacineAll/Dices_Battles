@@ -93,22 +93,6 @@ class hog:
 
 
 
-    def toujour_lancer(self,n):
-        """Renvoie une stratégie qui lance toujours N dés.
-        Une stratégie est une fonction qui prend deux scores totaux comme arguments
-        (le score du joueur actuel et le score de l'adversaire), et renvoie un
-        nombre de dés que le joueur actuel lancera ce tour.
-        >>> strategie = toujour_lancer(5)
-        >>> strategie(0, 0)
-        5
-        >>> strategie(99, 99)
-        5
-        """
-        def strategie(self,score, score_adverse):
-            return n
-        return strategie
-
-
     def strategie_toujour_lancer(self,n):
         """Renvoie une stratégie qui lance toujours N dés.
         Une stratégie est une fonction qui prend deux scores totaux comme arguments
@@ -150,7 +134,7 @@ class hog:
         D_MAX : le nombre maximum de des que on peut lancer
         """
         def strategie(score, score_adverse):
-            return self.opt[score][score_adverse]
+            return int(self.opt[score][score_adverse])
         return strategie
 
 
