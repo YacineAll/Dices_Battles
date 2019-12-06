@@ -9,8 +9,10 @@ MOGPL Project
 """
 
 from random import randint
-sides = 6
+faces = 6
 
 def dice():
-    
-    return randint(1,sides)
+    """
+    Un fonction qui renvoie un nombre entre 1 et 6 inclu aleatoirement.
+    """
+    return randint(1,faces)

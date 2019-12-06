@@ -1,3 +1,7 @@
+"""
+Ce fichier contient le fonction que on a utiliser pour l'expérimentation des differentes strategies.
+"""
+
 from outils import *
 from hog import hog
 import numpy as np

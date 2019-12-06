@@ -6,6 +6,11 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+"""
+Cette classe fournit un interface graphique pour lancer des partie en simultané avec D=10 
+
+"""
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 import numpy as np 
 from dice import *
@@ -13,7 +18,13 @@ from hog import hog
 from outils import *
 
 class Ui_Frame(object):
-    def setupUi(self, Frame):
+    def setupUi(self, Frame,joueur=1):
+        D = 10
+        N = 100
+        self.h = hog(D,N)
+        
+        self.result = lp_resolution(self.h.probabiltes,D,joueur)
+        
         Frame.setObjectName("Frame")
         Frame.resize(750, 247)
         self.gridLayout_2 = QtWidgets.QGridLayout(Frame)
@@ -95,14 +106,7 @@ class Ui_Frame(object):
     
     def play(self):
         
-        D = 10
-        N = 100
-        self.h = hog(D,N)
-        
-        result = lp_resolution(self.h.probabiltes,D,2)
-        
-        
-        a = np.array(np.array([ v.varValue for v in result])).cumsum()
+        a = np.array(np.array([ v.varValue for v in self.result])).cumsum()
         r = np.random.random()
         
         d2 =  int(np.where(a > r)[0][0])+1
@@ -130,9 +134,9 @@ class Ui_Frame(object):
             winner = 1
             self.ganeur_aff.setText(_translate("Frame", "Joueur "+str(winner)+" Gagne !!"))
         if(socre1 < score2 ) :
-            self.ganeur_aff.setText(_translate("Frame", "Joueur "+str(winner)+" Gagne !!"))
             b = False
             winner = 2
+            self.ganeur_aff.setText(_translate("Frame", "Joueur "+str(winner)+" Gagne !!"))
         if(b):
             self.ganeur_aff.setText(_translate("Frame", "La Partie est nulle"))
             
@@ -144,10 +148,11 @@ class Ui_Frame(object):
 
 if __name__ == "__main__":
     import sys
+    joueur = 1
     app = QtWidgets.QApplication(sys.argv)
     Frame = QtWidgets.QFrame()
     ui = Ui_Frame()
-    ui.setupUi(Frame)
+    ui.setupUi(Frame,joueur)
     Frame.show()
     sys.exit(app.exec_())
 

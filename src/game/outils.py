@@ -93,13 +93,20 @@ def probability_to_win(probabilite,D,N):
 
 
 def esperance_gain(N,D,probas):
-    n = N
-    d = D
+    """
+    N: nombre de points maximum 
+    D: nombre maximum de Dés
+    probas : matrice des probabilités
     
-    e = np.full((N + 6 * d, N + 6 * D), np.nan)
+    la fonction renvoie deux matrice: La matrice d'espirance de gain et la fonction des ooptimaux tel que:
+    e[s1,s2]: l'espérance de gain du joueur1 dans l'état ou le joueur 1 a comme score :s1, et joueur 2 :s2
+    o[score1,score2] : le nombre de Dé le plus optimale que le joueur 1 devra jouer dans l'état ou le joueur 1 a comme score s1 et joueur 2 s2
+    """
+    #on Cree un tableau de 
+    e = np.full((N + 6 * D, N + 6 * D), np.nan)
     
     o = np.zeros((N, N), dtype = int)
-        
+    
     e[N: , :N] = 1
     e[:N, N: ] = -1
         
