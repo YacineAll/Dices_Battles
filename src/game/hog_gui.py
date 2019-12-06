@@ -174,8 +174,8 @@ class HogGUI(Frame):
                 self.myStrategy = self.h.strategie_aveugle()
                 self.active_strategy.text ="Strategie active: Aveugle"
                 
-        self.st.pack(fill=BOTH, expand=True)
         self.st = Frame(self)
+        self.st.pack(fill=BOTH, expand=True)
         self.active_strategy = Label(self.st).pack()   
         self.aveugle = Button(self.st,text='Aveugle', command=aveugle)
         self.aveugle.pack(side=LEFT) 
