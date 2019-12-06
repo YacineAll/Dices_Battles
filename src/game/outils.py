@@ -154,7 +154,8 @@ def lp_resolution(probabilite,D,j=1):
 
     prob = LpProblem("Dices Battles J"+str(j),LpMaximize)
 
-    var_s = ['p'+str(i) for i in range(1,nb_variables) ]
+    var_s = ['p'+str(chr(96+i)) for i in range(1,nb_variables) ]
+    
 
     var_s +='z'
 
