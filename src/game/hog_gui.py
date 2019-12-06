@@ -6,7 +6,7 @@ Created on Wed Nov 20 19:28:27 2019
 @author: 3701222
 """
 
-import hog
+from hog import hog
 import dice
 
 
@@ -87,19 +87,27 @@ class HogGUI(Frame):
     """Tkinter GUI for Hog."""
     KILL = -9
 
-    STRATEGIES=[hog.strategie_aveugle(),hog.toujour_lancer(3)] 
+    
     
     def __init__(self, parent, computer=False):
         """Replace hog module's dice with hooks to GUI and start a game.
         parent   -- parent widget (should be root)
         computer -- True if playing against a computer
         """
+        
+        D = 20
+        N = 100
+        self.h = hog(D,N)
+        
+        self.STRATEGIES=[self.h.strategie_aveugle(),self.h.strategie_toujour_lancer(3)] 
+        
         super().__init__(parent)
         self.pack(fill=BOTH)
         self.parent = parent
         self.who = 0
 
         self.init_scores()
+        self.strs()
         self.init_rolls()
         self.init_dice()
         self.init_status()
@@ -142,6 +150,42 @@ class HogGUI(Frame):
         self.roll_verified = IntVar()
         self.roll_button = Button(self.roll_frame,text='Lancer!', command=self.roll).pack()
 
+    def strs(self):
+        """Creates child widgets associated with the number of rolls.
+        The primary widget is an Entry that accepts user input. An intermediate
+        Tkinter variable, self.roll_verified, is set to the final number of
+        rolls. Once it is updated, the player immediately takes a turn based on
+        its value.
+        """
+        self.myStrategy = self.h.strategie_optimale()
+        self.strategy_changed = False
+
+        def random():
+                self.strategy_changed = True
+                self.myStrategy = self.h.strategie_aleatoire()
+                self.active_strategy.text ="Strategie active: Random"
+                
+        def optimal():
+                self.strategy_changed = True
+                self.myStrategy = self.h.strategie_optimale()
+                self.active_strategy.text ="Strategie active: Optimal"
+        def aveugle():
+                self.strategy_changed = True
+                self.myStrategy = self.h.strategie_aveugle()
+                self.active_strategy.text ="Strategie active: Aveugle"
+                
+        self.st.pack(fill=BOTH, expand=True)
+        self.st = Frame(self)
+        self.active_strategy = Label(self.st).pack()   
+        self.aveugle = Button(self.st,text='Aveugle', command=aveugle)
+        self.aveugle.pack(side=LEFT) 
+        self.Optimal = Button(self.st,text='Optimal', command=optimal)
+        self.Optimal.pack(side=LEFT)
+        self.Random  = Button(self.st,text='Random', command=random)
+        self.Random.pack(side=LEFT)
+        
+        
+        
     def init_dice(self):
         """Creates child widgets associated with dice. Each dice is stored in a
         Label. Dice Labels will be packed or unpacked depending on how many dice
@@ -245,7 +289,7 @@ class HogGUI(Frame):
         self.s_labels[1].text = '0'
         self.status_label.text = ''
         try:
-            score, score_adverse = hog.jouer(self.strategy, self.strategy)
+            score, score_adverse = self.h.jouer(self.strategy, self.strategy)
         except HogGUIException:
             pass
         else:
@@ -273,10 +317,16 @@ class HogGUI(Frame):
         if self.computer and self.who == self.turn:
             self.update()
             self.after(DELAY)
-##################################################################################################################################################################################################################################
-            result = self.STRATEGIES[0](score,score_adverse)
-# Modifier la façon de choisir les strategie
-##################################################################################################################################################################################################################################
+            
+            self.Random.config(state="disabled")
+            self.Optimal.config(state="disabled")
+            self.aveugle.config(state="disabled")
+            
+            
+            if(not self.strategy_changed ):
+                self.active_strategy.text ="Strategie active: Optimal"
+                
+            result = self.myStrategy(score,score_adverse)
         else:
             self.roll_entry.focus_set()
             self.wait_variable(self.roll_verified)
@@ -299,7 +349,7 @@ def run_GUI(computer=False):
     """
     root = Tk() #Toplevel()
     root.title('Dice Battles')
-    root.minsize(520, 400)
+    root.minsize(800, 470)
     root.geometry("520x400")
 
     # Tkinter only works with GIFs
@@ -348,16 +398,5 @@ entry_theme = {
 
 DELAY=2000
 
-def run(*args):
-    parser = argparse.ArgumentParser(description='Hog GUI')
-    parser.add_argument('-f', '--final',
-                        help='play against the final strategy in hog.py. '
-                             'Computer alternates playing as player 0 and 1.',
-                        action='store_true')
-    parser.add_argument('-d', '--delay',
-                        help='time delay for computer, in seconds', type=int,
-                        default=2)
-    args = parser.parse_args()
-    global DELAY
-    DELAY = args.delay * 1000
-    run_GUI(computer=args.final)
+def run(ifComputer):
+    run_GUI(computer=ifComputer)

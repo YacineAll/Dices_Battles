@@ -48,15 +48,11 @@ class hog:
 
         assert type(d) == int, 'd doit être un entier.'
         assert d > 0, 'Impossible de lancer un nombre négatif de dés ou zero .'
-        assert d <= 10, 'ON ne peut pas lancer plus de 10 dés.'
-        assert score_adverse < 100, 'Le jeu devrait être terminé.'
+        assert d <= self.D_MAX, 'ON ne peut pas lancer plus de 10 dés.'
+        assert score_adverse < self.SCORE_MAX, 'Le jeu devrait être terminé.'
         return self._roulez_les_des(d)
 
 
-    def autre(self,q):
-        """Renvoie l'autre joueur, pour un joueur numéroté 0 ou 1..
-        """
-        return 1 - q
 
     def jouer(self , strategie0, strategie1):
         """Simulez une partie et renvoyez les scores finaux des deux joueurs, avec
@@ -128,6 +124,7 @@ class hog:
             return int(1+np.argmax(np.array([4*d*np.power(5/6,d) + (1-np.power(5/6,d)) for d in range(1,D+1) ])))
         return strategie
 
+    
     def strategie_optimale(self):
         """Renvoie le nombre de dés (1 à 10) donnant le tour moyen le plus élevé.
         EP = max ( 4*d*np.power(5/6,d) + 1 - np.power(5/6,d) for d in {1,2,3,...,D_MAX})

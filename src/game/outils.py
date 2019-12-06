@@ -139,6 +139,11 @@ def eg_simul(probabiltes,D):
 
 
 def lp_resolution(probabilite,D,j=1):
+    """
+    2ndarray * int  * int -> list of pulp object 
+    Prend en parametre  probabilites, nombre maximum de dés D et j represente le joueur qui va jouer 
+    Rend la liste des variables pulp 
+    """
     
     if(j==1):
         g = eg_simul(probabilite,D)
@@ -163,7 +168,6 @@ def lp_resolution(probabilite,D,j=1):
         for j in range(len(coefs_obj[0])):
             t.append(coefs_obj[i][j]*variables[var_s[j]])
         l.append(t)
-
     prob += 1*variables[var_s[nb_variables-1]]
 
 
